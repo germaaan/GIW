@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.document.Document;
@@ -17,6 +18,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import parser.Noticia;
 import parser.Parser;
 
 /**
@@ -47,8 +49,13 @@ public class Indexador {
         Parser parser = new Parser();
 
         parser.SGML2XML();
-        
-        parser.parseXML();
+
+        ArrayList<Noticia> listaNoticias = new ArrayList(parser.parseXML());
+        Iterator<Noticia> iterador = listaNoticias.iterator();
+
+        while (iterador.hasNext()) {
+            System.out.print(iterador.next().toString());
+        }
     }
 
 }

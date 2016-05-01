@@ -5,7 +5,6 @@
  */
 package parser;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,8 +34,7 @@ public class Parser {
     File salida = new File(ruta + nombreArchivo + ".xml");
 
     public void SGML2XML() {
-        try {
-            FileWriter writer = new FileWriter(salida, true);
+        try (FileWriter writer = new FileWriter(salida, false)) {
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             writer.write(System.lineSeparator());
             writer.write("<SGML>");
@@ -44,7 +42,6 @@ public class Parser {
             writer.write(new Scanner(entrada, "UTF-8").useDelimiter("\\A").next());
             writer.write(System.lineSeparator());
             writer.write("</SGML>");
-            writer.close();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
@@ -53,21 +50,30 @@ public class Parser {
         }
     }
 
-    public void parseXML() {
-        try {
-            File inputFile = new File(ruta + nombreArchivo + ".xml");
+    public ArrayList<Noticia> parseXML() {
+        ArrayList<Noticia> listaNoticias = new ArrayList();
 
+        try {
             DocumentBuilderFactory dbFactory
                     = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputFile);
-
+            Document doc = dBuilder.parse(salida);
             doc.getDocumentElement().normalize();
 
-            System.out.println("Root element :"
-                    + doc.getDocumentElement().getNodeName());
-            //NodeList nList = doc.getElementsByTagName("student");
-            System.out.println("----------------------------");
+            NodeList nodos = doc.getElementsByTagName("DOC");
+
+            for (int temp = 0; temp < nodos.getLength(); temp++) {
+                Node nodo = nodos.item(temp);
+
+                if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+                    Element elemento = (Element) nodo;
+
+                    String titulo = elemento.getElementsByTagName("TITLE").item(0).getTextContent();
+                    String texto = elemento.getElementsByTagName("TEXT").item(0).getTextContent();
+
+                    listaNoticias.add(new Noticia(titulo, texto));
+                }
+            }
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
@@ -75,5 +81,7 @@ public class Parser {
         } catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return listaNoticias;
     }
 }
