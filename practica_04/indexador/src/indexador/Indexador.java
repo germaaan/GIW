@@ -51,7 +51,7 @@ public class Indexador {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String rutaIndice = System.getProperty("user.dir") + "/src/indice";
         Indexador indexador = null;
 
@@ -72,14 +72,14 @@ public class Indexador {
             parser.SGML2XML(ruta, archivo);
             listaXML.add((archivo.substring(0, archivo.lastIndexOf('.'))) + ".xml");
         }
+
         System.out.println("Recuperando toda la información de los archivos...");
 
         iterador = listaXML.iterator();
-        
         while (iterador.hasNext()) {
             listaNoticias.addAll(parser.parseXML(ruta, iterador.next()));
         }
-        
+
         System.out.println("Número de noticias recuperadas: " + listaNoticias.size());
 
         System.out.println("Borrando archivos temporales...");

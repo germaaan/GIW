@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -41,69 +42,25 @@ public class Parser {
         return listaArchivos;
     }
 
-    public String leerArchivo(String archivo) {
-        String contenido = "";
-        BufferedReader br = null;
-
-        try {
-            br = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(archivo), "UTF-8"));
-            String linea;
-            StringBuilder sb = new StringBuilder();
-            while ((linea = br.readLine()) != null) {
-                sb.append(linea);
-                sb.append("\n");
-            }
-
-            contenido = sb.toString();
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                br.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        return contenido;
-    }
-
-    public void escribirArchivos(String archivo, String texto) {
-        BufferedWriter out = null;
-
-        try {
-            out = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(archivo), "UTF-8"));
-
-            out.write(texto);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
     public void SGML2XML(String ruta, String archivo) {
-        String archivoSalida = ruta + (archivo.substring(0, archivo.lastIndexOf('.'))) + ".xml";
+        try {
+            File archivoEntrada = new File(ruta + archivo);
+            File archivoSalida = new File(ruta + (archivo.substring(0, archivo.lastIndexOf('.'))) + ".xml");
 
-        String cadena = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "\n<SGML>\n" + this.leerArchivo(ruta + archivo)
-                + "\n</SGML>";
+            String contenido = FileUtils.readFileToString(archivoEntrada, "ISO_8859_1");
+            contenido = contenido.replace("&", "");
+            contenido = contenido.replace(">< ", ">");
+            contenido = contenido.replace("<\n</", "<");
+            contenido = contenido.replace("<TEXT>\n</DOC>", "</TEXT>\n</DOC>");
+            contenido = contenido.replace("<                       \n                                                                             ...\n</", "\n</");
 
-        this.escribirArchivos(archivoSalida, cadena);
+            String cadena = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                    + "\n<SGML>\n" + contenido + "\n</SGML>";
+
+            FileUtils.writeStringToFile(archivoSalida, cadena, "UTF-8");
+        } catch (IOException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public ArrayList<Noticia> parseXML(String ruta, String archivo) {
@@ -133,6 +90,7 @@ public class Parser {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         }
