@@ -1,18 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package parser;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,36 +28,92 @@ import org.xml.sax.SAXException;
  */
 public class Parser {
 
-    String ruta = "/home/germaaan/GIW/documentos/";
-    String nombreArchivo = "prueba";
-    File entrada = new File(ruta + nombreArchivo + ".sgml");
-    File salida = new File(ruta + nombreArchivo + ".xml");
+    public ArrayList<String> getListaArchivos(String ruta) {
+        ArrayList<String> listaArchivos = new ArrayList<String>();
+        File[] archivos = new File(ruta).listFiles();
 
-    public void SGML2XML() {
-        try (FileWriter writer = new FileWriter(salida, false)) {
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            writer.write(System.lineSeparator());
-            writer.write("<SGML>");
-            writer.write(System.lineSeparator());
-            writer.write(new Scanner(entrada, "UTF-8").useDelimiter("\\A").next());
-            writer.write(System.lineSeparator());
-            writer.write("</SGML>");
+        for (File f : archivos) {
+            if (f.isFile()) {
+                listaArchivos.add(f.getName());
+            }
+        }
 
+        return listaArchivos;
+    }
+
+    public String leerArchivo(String archivo) {
+        String contenido = "";
+        BufferedReader br = null;
+
+        try {
+            br = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(archivo), "UTF-8"));
+            String linea;
+            StringBuilder sb = new StringBuilder();
+            while ((linea = br.readLine()) != null) {
+                sb.append(linea);
+                sb.append("\n");
+            }
+
+            contenido = sb.toString();
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                br.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return contenido;
+    }
+
+    public void escribirArchivos(String archivo, String texto) {
+        BufferedWriter out = null;
+
+        try {
+            out = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(archivo), "UTF-8"));
+
+            out.write(texto);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                out.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
-    public ArrayList<Noticia> parseXML() {
+    public void SGML2XML(String ruta, String archivo) {
+        String archivoSalida = ruta + (archivo.substring(0, archivo.lastIndexOf('.'))) + ".xml";
+
+        String cadena = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "\n<SGML>\n" + this.leerArchivo(ruta + archivo)
+                + "\n</SGML>";
+
+        this.escribirArchivos(archivoSalida, cadena);
+    }
+
+    public ArrayList<Noticia> parseXML(String ruta, String archivo) {
+        File archivoEntrada = new File(ruta + archivo);
         ArrayList<Noticia> listaNoticias = new ArrayList();
 
         try {
-            DocumentBuilderFactory dbFactory
-                    = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(salida);
+            Document doc = dBuilder.parse(archivoEntrada);
             doc.getDocumentElement().normalize();
 
             NodeList nodos = doc.getElementsByTagName("DOC");
@@ -77,7 +133,6 @@ public class Parser {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         }
