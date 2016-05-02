@@ -1,13 +1,28 @@
+package interfaz;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import static org.apache.lucene.index.DirectoryReader.indexExists;
+import org.apache.lucene.store.FSDirectory;
+
 /**
  *
  * @author Germán Martínez Maldonado
  */
 public class Interfaz extends javax.swing.JFrame {
 
+    private String indice;
+
     /**
      * Creates new form Interfaz
      */
     public Interfaz() {
+        this.indice = "";
+
         initComponents();
     }
 
@@ -20,40 +35,68 @@ public class Interfaz extends javax.swing.JFrame {
         campoMensajeResultado = new javax.swing.JTextField();
         panelResultados = new javax.swing.JScrollPane();
         listaResultados = new javax.swing.JList<>();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
+        panelNoticias = new javax.swing.JScrollPane();
+        campoNoticias = new javax.swing.JEditorPane();
         barraMenu = new javax.swing.JMenuBar();
         menuAcciones = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         opcionSalir = new javax.swing.JMenuItem();
         menuAyuda = new javax.swing.JMenu();
         opcionAcercaDe = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
 
+        campoBusqueda.setEditable(false);
+
         botonBuscar.setText("Buscar");
+        botonBuscar.setEnabled(false);
+        botonBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accionBuscar(evt);
+            }
+        });
 
         campoMensajeResultado.setEditable(false);
         campoMensajeResultado.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         campoMensajeResultado.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        campoMensajeResultado.setEnabled(false);
         campoMensajeResultado.setMinimumSize(new java.awt.Dimension(2, 19));
         campoMensajeResultado.setPreferredSize(new java.awt.Dimension(365, 23));
 
         listaResultados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         panelResultados.setViewportView(listaResultados);
 
-        jScrollPane1.setViewportView(jEditorPane1);
+        panelNoticias.setViewportView(campoNoticias);
 
         menuAcciones.setText("Acciones");
 
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK));
+        jMenuItem2.setText("Cargar índice");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accionCargarIndice(evt);
+            }
+        });
+        menuAcciones.add(jMenuItem2);
+
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.ALT_MASK));
         jMenuItem1.setText("Guardar noticia");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accionGuardarNoticia(evt);
+            }
+        });
         menuAcciones.add(jMenuItem1);
 
         opcionSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
         opcionSalir.setText("Salir");
+        opcionSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accionSalir(evt);
+            }
+        });
         menuAcciones.add(opcionSalir);
 
         barraMenu.add(menuAcciones);
@@ -62,6 +105,11 @@ public class Interfaz extends javax.swing.JFrame {
 
         opcionAcercaDe.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_MASK));
         opcionAcercaDe.setText("Acerca de");
+        opcionAcercaDe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accionAcercaDe(evt);
+            }
+        });
         menuAyuda.add(opcionAcercaDe);
 
         barraMenu.add(menuAyuda);
@@ -78,7 +126,7 @@ public class Interfaz extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(panelResultados, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1))
+                        .addComponent(panelNoticias))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(campoBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -98,12 +146,64 @@ public class Interfaz extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelResultados, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(panelNoticias))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void accionCargarIndice(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionCargarIndice
+        try {
+            String ruta;
+            boolean existeIndice;
+
+            JTextField campoRuta = new JTextField();
+
+            Object[] contenido = {"Introduzca la ruta del índice: ", campoRuta};
+            Object acciones[] = {"Aceptar", "Volver"};
+
+            int accion = JOptionPane.showOptionDialog(null, contenido, "Cargar índice",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, acciones,
+                    contenido);
+
+            if (accion == JOptionPane.YES_OPTION) {
+                ruta = campoRuta.getText();
+                existeIndice = indexExists(FSDirectory.open(new File(ruta)));
+
+                if (existeIndice) {
+                    this.indice = ruta;
+                    this.campoBusqueda.setEditable(true);
+                    this.botonBuscar.setEnabled(true);
+                    JOptionPane.showMessageDialog(this, "Índice cargado: " + this.indice,
+                            "Información", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("Índice cargado: " + this.indice);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No existe ningún indice en :" + ruta,
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    System.out.println("No existe ningún indice en : " + ruta);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_accionCargarIndice
+
+    private void accionGuardarNoticia(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionGuardarNoticia
+        // TODO add your handling code here:
+    }//GEN-LAST:event_accionGuardarNoticia
+
+    private void accionSalir(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionSalir
+        // TODO add your handling code here:
+    }//GEN-LAST:event_accionSalir
+
+    private void accionAcercaDe(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionAcercaDe
+        // TODO add your handling code here:
+    }//GEN-LAST:event_accionAcercaDe
+
+    private void accionBuscar(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionBuscar
+        // TODO add your handling code here:
+    }//GEN-LAST:event_accionBuscar
 
     /**
      * @param args the command line arguments
@@ -143,14 +243,15 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JButton botonBuscar;
     private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoMensajeResultado;
-    private javax.swing.JEditorPane jEditorPane1;
+    private javax.swing.JEditorPane campoNoticias;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JList<String> listaResultados;
     private javax.swing.JMenu menuAcciones;
     private javax.swing.JMenu menuAyuda;
     private javax.swing.JMenuItem opcionAcercaDe;
     private javax.swing.JMenuItem opcionSalir;
+    private javax.swing.JScrollPane panelNoticias;
     private javax.swing.JScrollPane panelResultados;
     // End of variables declaration//GEN-END:variables
 }
