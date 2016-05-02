@@ -6,6 +6,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,9 +78,9 @@ public class Utils {
         }
     }
 
-    public ArrayList<Noticia> parseXML(String ruta, String archivo) {
+    public Map<String, String> parseXML(String ruta, String archivo) {
         File archivoEntrada = new File(ruta + archivo);
-        ArrayList<Noticia> listaNoticias = new ArrayList();
+        HashMap<String, String> noticias = new HashMap<>();
 
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -97,7 +99,7 @@ public class Utils {
                     String titulo = elemento.getElementsByTagName("TITLE").item(0).getTextContent();
                     String texto = elemento.getElementsByTagName("TEXT").item(0).getTextContent();
 
-                    listaNoticias.add(new Noticia(titulo, texto));
+                    noticias.put(titulo, texto);
                 }
             }
         } catch (ParserConfigurationException ex) {
@@ -108,6 +110,6 @@ public class Utils {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return listaNoticias;
+        return noticias;
     }
 }

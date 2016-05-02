@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
@@ -16,7 +18,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import utils.Noticia;
 import utils.Utils;
 
 /**
@@ -49,7 +50,7 @@ public class Indexador {
             ArrayList<String> archivos = new ArrayList(convertirDocumentos(documentos));
 
             System.out.println("Recuperando toda la información de los archivos...");
-            ArrayList<Noticia> noticias = new ArrayList(procesarDocumentos(documentos, archivos));
+            HashMap<String, String> noticias = new HashMap<>(procesarDocumentos(documentos, archivos));
 
             System.out.println("Número de noticias recuperadas: " + noticias.size());
 
@@ -58,15 +59,15 @@ public class Indexador {
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
             IndexWriter iwriter = new IndexWriter(directory, config);
 
-            Iterator<Noticia> iterador = noticias.iterator();
+            Iterator<Map.Entry<String, String>> iterador = noticias.entrySet().iterator();
             while (iterador.hasNext()) {
-                Noticia noticia = iterador.next();
+                Map.Entry par = (Map.Entry) iterador.next();
 
                 Document doc = new Document();
 
-                doc.add(new Field("titulo", noticia.getTitulo(), Field.Store.YES, Field.Index.ANALYZED));
+                doc.add(new Field("titulo", par.getKey().toString(), Field.Store.YES, Field.Index.ANALYZED));
                 //Añadir tokenstream filters
-                doc.add(new TextField("texto", new StringReader(noticia.getTexto())));
+                doc.add(new TextField("texto", new StringReader(par.getValue().toString())));
 
                 iwriter.addDocument(doc);
             }
@@ -96,12 +97,12 @@ public class Indexador {
         return xmls;
     }
 
-    private ArrayList<Noticia> procesarDocumentos(String documentos, ArrayList<String> archivos) {
-        ArrayList<Noticia> noticias = new ArrayList();
+    private Map<String, String> procesarDocumentos(String documentos, ArrayList<String> archivos) {
+        HashMap<String, String> noticias = new HashMap<>();
 
         Iterator<String> iterador = archivos.iterator();
         while (iterador.hasNext()) {
-            noticias.addAll(utils.parseXML(documentos, iterador.next()));
+            noticias.putAll(utils.parseXML(documentos, iterador.next()));
         }
 
         return noticias;
