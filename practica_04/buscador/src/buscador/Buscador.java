@@ -19,6 +19,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import utils.Noticia;
 
 /**
  *
@@ -26,22 +27,21 @@ import org.apache.lucene.util.Version;
  */
 public class Buscador {
 
-    public ArrayList<String> buscar(String indice, String busqueda) {
-        ArrayList<String> resultados = new ArrayList<>();
+    public ArrayList<Noticia> buscar(String indice, String busqueda) {
+        ArrayList<Noticia> resultados = new ArrayList<>();
 
         CharArraySet stopSet = new CharArraySet(Version.LUCENE_43,
                 Arrays.asList(new String[]{""}), true);
 
         try {
-            String palabrasVacias = "/home/germaaan/GIW/palabras_vacias_utf8.txt";
-
-            System.out.println("Realizando búsqueda.... ");
-
             DirectoryReader ireader = DirectoryReader.open(FSDirectory.open(new File(indice)));
             IndexSearcher isearcher = new IndexSearcher(ireader);
 
+            File palabrasVacias = new File(getClass().getResource(
+                    "/utils/palabras_vacias_utf8.txt").getFile());
+
             String[] words = StringUtils.split(
-                    FileUtils.readFileToString(new File(palabrasVacias), "UTF-8"));
+                    FileUtils.readFileToString(palabrasVacias, "UTF-8"));
             ArrayList<String> stopWords = new ArrayList(Arrays.asList(words));
 
             stopSet = new CharArraySet(Version.LUCENE_43, stopWords, true);
@@ -53,18 +53,12 @@ public class Buscador {
 
             ScoreDoc[] hits = isearcher.search(query, null, 1000).scoreDocs;
 
-            if (hits.length == 0) {
-                System.out.println("No se han encontrado resultados para la búsqueda \""
-                        + busqueda + "\".");
-            } else {
-                System.out.println(hits.length + "resultados para la búsqueda \""
-                        + busqueda + "\":");
-
-                for (int i = 0; i < hits.length; i++) {
-                    Document hitDoc = isearcher.doc(hits[i].doc);
+            if (hits.length > 0) {
+                for (ScoreDoc hit : hits) {
+                    Document hitDoc = isearcher.doc(hit.doc);
                     String titulo = hitDoc.get("titulo");
-                    System.out.println("\t" + titulo);
-                    resultados.add(titulo);
+                    String texto = hitDoc.get("texto");
+                    resultados.add(new Noticia(titulo, texto));
                 }
             }
         } catch (IOException ex) {

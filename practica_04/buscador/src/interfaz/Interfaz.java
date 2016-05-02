@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import static org.apache.lucene.index.DirectoryReader.indexExists;
 import org.apache.lucene.store.FSDirectory;
+import utils.Noticia;
 
 /**
  *
@@ -21,13 +22,12 @@ public class Interfaz extends javax.swing.JFrame {
 
     private String indice;
     private Buscador buscador = new Buscador();
+    ArrayList<Noticia> resultados;
 
     /**
      * Creates new form Interfaz
      */
     public Interfaz() {
-        this.indice = "";
-
         initComponents();
     }
 
@@ -41,7 +41,7 @@ public class Interfaz extends javax.swing.JFrame {
         panelResultados = new javax.swing.JScrollPane();
         listaResultados = new javax.swing.JList<>();
         panelNoticias = new javax.swing.JScrollPane();
-        campoNoticias = new javax.swing.JEditorPane();
+        areaNoticias = new javax.swing.JTextArea();
         barraMenu = new javax.swing.JMenuBar();
         menuAcciones = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -78,7 +78,10 @@ public class Interfaz extends javax.swing.JFrame {
         listaResultados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         panelResultados.setViewportView(listaResultados);
 
-        panelNoticias.setViewportView(campoNoticias);
+        areaNoticias.setEditable(false);
+        areaNoticias.setColumns(20);
+        areaNoticias.setRows(5);
+        panelNoticias.setViewportView(areaNoticias);
 
         menuAcciones.setText("Acciones");
 
@@ -217,12 +220,14 @@ public class Interfaz extends javax.swing.JFrame {
         String mensajeResultado = "";
 
         if (!busqueda.equals("")) {
-            ArrayList<String> resultados = new ArrayList<>(this.buscador.buscar(
+            System.out.println("Realizando búsqueda.... ");
+            
+            resultados = new ArrayList<>(this.buscador.buscar(
                     this.indice, busqueda));
 
-            Iterator<String> iterador = resultados.iterator();
+            Iterator<Noticia> iterador = resultados.iterator();
             while (iterador.hasNext()) {
-                lista.addElement(iterador.next());
+                lista.addElement(iterador.next().getTitulo());
             }
 
             this.listaResultados.setModel(lista);
@@ -273,11 +278,11 @@ public class Interfaz extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea areaNoticias;
     private javax.swing.JMenuBar barraMenu;
     private javax.swing.JButton botonBuscar;
     private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoMensajeResultado;
-    private javax.swing.JEditorPane campoNoticias;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JList<String> listaResultados;
