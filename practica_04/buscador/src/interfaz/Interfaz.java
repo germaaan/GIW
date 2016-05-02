@@ -3,8 +3,11 @@ package interfaz;
 import buscador.Buscador;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -12,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import static org.apache.lucene.index.DirectoryReader.indexExists;
 import org.apache.lucene.store.FSDirectory;
-import utils.Noticia;
 
 /**
  *
@@ -22,7 +24,7 @@ public class Interfaz extends javax.swing.JFrame {
 
     private String indice;
     private Buscador buscador = new Buscador();
-    ArrayList<Noticia> resultados;
+    HashMap<String, String> resultados;
 
     /**
      * Creates new form Interfaz
@@ -76,6 +78,11 @@ public class Interfaz extends javax.swing.JFrame {
         campoMensajeResultado.setPreferredSize(new java.awt.Dimension(365, 23));
 
         listaResultados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaResultados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                accionSeleccionarNoticia(evt);
+            }
+        });
         panelResultados.setViewportView(listaResultados);
 
         areaNoticias.setEditable(false);
@@ -221,13 +228,13 @@ public class Interfaz extends javax.swing.JFrame {
 
         if (!busqueda.equals("")) {
             System.out.println("Realizando búsqueda.... ");
-            
-            resultados = new ArrayList<>(this.buscador.buscar(
-                    this.indice, busqueda));
+            resultados = new HashMap<>(this.buscador.buscar(this.indice, busqueda));
 
-            Iterator<Noticia> iterador = resultados.iterator();
+            Iterator<Entry<String, String>> iterador = resultados.entrySet().iterator();
             while (iterador.hasNext()) {
-                lista.addElement(iterador.next().getTitulo());
+                Map.Entry par = (Map.Entry) iterador.next();
+
+                lista.addElement(par.getKey());
             }
 
             this.listaResultados.setModel(lista);
@@ -243,6 +250,13 @@ public class Interfaz extends javax.swing.JFrame {
 
         System.out.println("RESULTADO: " + mensajeResultado);
     }//GEN-LAST:event_accionBuscar
+
+    private void accionSeleccionarNoticia(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accionSeleccionarNoticia
+        if (evt.getClickCount() == 2) {
+            String seleccionado = this.listaResultados.getSelectedValue();
+
+        }
+    }//GEN-LAST:event_accionSeleccionarNoticia
 
     /**
      * @param args the command line arguments

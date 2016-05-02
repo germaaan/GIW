@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -19,7 +21,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import utils.Noticia;
 
 /**
  *
@@ -27,8 +28,8 @@ import utils.Noticia;
  */
 public class Buscador {
 
-    public ArrayList<Noticia> buscar(String indice, String busqueda) {
-        ArrayList<Noticia> resultados = new ArrayList<>();
+    public Map<String, String> buscar(String indice, String busqueda) {
+        HashMap<String, String> resultados = new HashMap<>();
 
         CharArraySet stopSet = new CharArraySet(Version.LUCENE_43,
                 Arrays.asList(new String[]{""}), true);
@@ -38,7 +39,7 @@ public class Buscador {
             IndexSearcher isearcher = new IndexSearcher(ireader);
 
             File palabrasVacias = new File(getClass().getResource(
-                    "/utils/palabras_vacias_utf8.txt").getFile());
+                    "/recursos/palabras_vacias_utf8.txt").getFile());
 
             String[] words = StringUtils.split(
                     FileUtils.readFileToString(palabrasVacias, "UTF-8"));
@@ -58,7 +59,8 @@ public class Buscador {
                     Document hitDoc = isearcher.doc(hit.doc);
                     String titulo = hitDoc.get("titulo");
                     String texto = hitDoc.get("texto");
-                    resultados.add(new Noticia(titulo, texto));
+                    
+                    resultados.put(titulo, texto);
                 }
             }
         } catch (IOException ex) {
