@@ -1,22 +1,19 @@
 package parser;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.util.Version;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -30,7 +27,7 @@ import org.xml.sax.SAXException;
 public class Parser {
 
     public ArrayList<String> getListaArchivos(String ruta) {
-        ArrayList<String> listaArchivos = new ArrayList<String>();
+        ArrayList<String> listaArchivos = new ArrayList<>();
         File[] archivos = new File(ruta).listFiles();
 
         for (File f : archivos) {
@@ -40,6 +37,23 @@ public class Parser {
         }
 
         return listaArchivos;
+    }
+
+    public CharArraySet getPalabrasVacias(String ruta) {
+        CharArraySet stopSet = new CharArraySet(Version.LUCENE_43,
+                Arrays.asList(new String[]{""}), true);
+
+        try {
+            String[] words = StringUtils.split(
+                    FileUtils.readFileToString(new File(ruta), "UTF-8"));
+            ArrayList<String> stopWords = new ArrayList(Arrays.asList(words));
+
+            stopSet = new CharArraySet(Version.LUCENE_43, stopWords, true);
+        } catch (IOException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return stopSet;
     }
 
     public void SGML2XML(String ruta, String archivo) {
