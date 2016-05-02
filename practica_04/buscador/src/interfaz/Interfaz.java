@@ -1,9 +1,13 @@
 package interfaz;
 
+import buscador.Buscador;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import static org.apache.lucene.index.DirectoryReader.indexExists;
@@ -16,6 +20,7 @@ import org.apache.lucene.store.FSDirectory;
 public class Interfaz extends javax.swing.JFrame {
 
     private String indice;
+    private Buscador buscador = new Buscador();
 
     /**
      * Creates new form Interfaz
@@ -49,6 +54,11 @@ public class Interfaz extends javax.swing.JFrame {
         setResizable(false);
 
         campoBusqueda.setEditable(false);
+        campoBusqueda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accionBuscar(evt);
+            }
+        });
 
         botonBuscar.setText("Buscar");
         botonBuscar.setEnabled(false);
@@ -202,7 +212,31 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_accionAcercaDe
 
     private void accionBuscar(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionBuscar
-        // TODO add your handling code here:
+        String busqueda = this.campoBusqueda.getText();
+        DefaultListModel lista = new DefaultListModel();
+        String mensajeResultado = "";
+
+        if (!busqueda.equals("")) {
+            ArrayList<String> resultados = new ArrayList<>(this.buscador.buscar(
+                    this.indice, busqueda));
+
+            Iterator<String> iterador = resultados.iterator();
+            while (iterador.hasNext()) {
+                lista.addElement(iterador.next());
+            }
+
+            this.listaResultados.setModel(lista);
+            mensajeResultado = resultados.size() + " resultados para la búsqueda.";
+
+            this.campoMensajeResultado.setText(mensajeResultado);
+        } else {
+            mensajeResultado = "No ha introducido ningún texto en el campo de búsqueda.";
+
+            JOptionPane.showMessageDialog(this, mensajeResultado, "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        System.out.println("RESULTADO: " + mensajeResultado);
     }//GEN-LAST:event_accionBuscar
 
     /**

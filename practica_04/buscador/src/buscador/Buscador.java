@@ -1,6 +1,5 @@
 package buscador;
 
-import com.sun.javafx.util.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,23 +26,27 @@ import org.apache.lucene.util.Version;
  */
 public class Buscador {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        try {
-            String indice = "/home/germaaan/GIW/indice";
-            String palabrasVacias = "/home/germaaan/GIW/palabras_vacias_utf8.txt";
-            String busqueda = "president";
+    public ArrayList<String> buscar(String indice, String busqueda) {
+        ArrayList<String> resultados = new ArrayList<>();
 
-            ArrayList<String> resultados = new ArrayList<>();
+        CharArraySet stopSet = new CharArraySet(Version.LUCENE_43,
+                Arrays.asList(new String[]{""}), true);
+
+        try {
+            String palabrasVacias = "/home/germaaan/GIW/palabras_vacias_utf8.txt";
 
             System.out.println("Realizando búsqueda.... ");
 
             DirectoryReader ireader = DirectoryReader.open(FSDirectory.open(new File(indice)));
             IndexSearcher isearcher = new IndexSearcher(ireader);
 
-            SpanishAnalyzer analyzer = new SpanishAnalyzer(Version.LUCENE_43, getPalabrasVacias(palabrasVacias));
+            String[] words = StringUtils.split(
+                    FileUtils.readFileToString(new File(palabrasVacias), "UTF-8"));
+            ArrayList<String> stopWords = new ArrayList(Arrays.asList(words));
+
+            stopSet = new CharArraySet(Version.LUCENE_43, stopWords, true);
+
+            SpanishAnalyzer analyzer = new SpanishAnalyzer(Version.LUCENE_43, stopSet);
 
             QueryParser parser = new QueryParser(Version.LUCENE_43, "texto", analyzer);
             Query query = parser.parse(busqueda);
@@ -69,23 +72,7 @@ public class Buscador {
         } catch (ParseException ex) {
             Logger.getLogger(Buscador.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return resultados;
     }
-
-    private static CharArraySet getPalabrasVacias(String ruta) {
-        CharArraySet stopSet = new CharArraySet(Version.LUCENE_43,
-                Arrays.asList(new String[]{""}), true);
-
-        try {
-            String[] words = StringUtils.split(
-                    FileUtils.readFileToString(new File(ruta), "UTF-8"));
-            ArrayList<String> stopWords = new ArrayList(Arrays.asList(words));
-
-            stopSet = new CharArraySet(Version.LUCENE_43, stopWords, true);
-        } catch (IOException ex) {
-            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return stopSet;
-    }
-
 }
