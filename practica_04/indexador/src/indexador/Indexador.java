@@ -16,8 +16,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import parser.Noticia;
-import parser.Parser;
+import utils.Noticia;
+import utils.Utils;
 
 /**
  *
@@ -25,12 +25,23 @@ import parser.Parser;
  */
 public class Indexador {
 
-    Parser parser = new Parser();
+    private Utils utils = new Utils();
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        String documentos = "/home/germaaan/GIW/documentos/";
+        String palabrasVacias = "/home/germaaan/GIW/palabras_vacias_utf8.txt";
+        String indice = "/home/germaaan/GIW/indice";
+
+        Indexador indexador = new Indexador(documentos, palabrasVacias, indice);
+    }
 
     public Indexador(String documentos, String palabrasVacias, String indice) {
         try {
             SpanishAnalyzer analyzer = new SpanishAnalyzer(Version.LUCENE_43,
-                    parser.getPalabrasVacias(palabrasVacias));
+                    utils.getPalabrasVacias(palabrasVacias));
 
             System.out.println("Número de palabras vacías reconocidas: " + analyzer.getStopwordSet().size());
 
@@ -71,14 +82,14 @@ public class Indexador {
     }
 
     private ArrayList<String> convertirDocumentos(String documentos) {
-        ArrayList<String> archivos = new ArrayList(parser.getListaArchivos(documentos));
+        ArrayList<String> archivos = new ArrayList(utils.getListaArchivos(documentos));
         ArrayList<String> xmls = new ArrayList();
 
         Iterator<String> iterador = archivos.iterator();
         while (iterador.hasNext()) {
             String archivo = iterador.next();
 
-            parser.SGML2XML(documentos, archivo);
+            utils.SGML2XML(documentos, archivo);
             xmls.add((archivo.substring(0, archivo.lastIndexOf('.'))) + ".xml");
         }
 
@@ -90,7 +101,7 @@ public class Indexador {
 
         Iterator<String> iterador = archivos.iterator();
         while (iterador.hasNext()) {
-            noticias.addAll(parser.parseXML(documentos, iterador.next()));
+            noticias.addAll(utils.parseXML(documentos, iterador.next()));
         }
 
         return noticias;
@@ -103,16 +114,5 @@ public class Indexador {
             File aux = new File(documentos + iterador.next());
             aux.delete();
         }
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        String documentos = "/home/germaaan/GIW/documentos/";
-        String palabrasVacias = "/home/germaaan/GIW/palabras_vacias_utf8.txt";
-        String indice = "/home/germaaan/GIW/indice";
-
-        Indexador indexador = new Indexador(documentos, palabrasVacias, indice);
     }
 }

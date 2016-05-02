@@ -1,4 +1,4 @@
-package parser;
+package utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,7 +23,7 @@ import org.xml.sax.SAXException;
  *
  * @author Germán Martínez Maldonado
  */
-public class Parser {
+public class Utils {
 
     public ArrayList<String> getListaArchivos(String ruta) {
         ArrayList<String> listaArchivos = new ArrayList<>();
@@ -50,7 +49,7 @@ public class Parser {
 
             stopSet = new CharArraySet(Version.LUCENE_43, stopWords, true);
         } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return stopSet;
@@ -73,7 +72,7 @@ public class Parser {
 
             FileUtils.writeStringToFile(archivoSalida, cadena, "UTF-8");
         } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -102,11 +101,11 @@ public class Parser {
                 }
             }
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return listaNoticias;
