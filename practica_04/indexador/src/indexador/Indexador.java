@@ -13,6 +13,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import static org.apache.lucene.index.DirectoryReader.indexExists;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -58,14 +59,20 @@ public class Indexador {
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
             IndexWriter iwriter = new IndexWriter(directory, config);
 
+            boolean existeIndice = indexExists(FSDirectory.open(new File(indice)));
+
+            if (existeIndice) {
+                iwriter.deleteAll();
+            }
+
             Iterator<Map.Entry<String, String>> iterador = noticias.entrySet().iterator();
             while (iterador.hasNext()) {
                 Map.Entry par = (Map.Entry) iterador.next();
 
                 Document doc = new Document();
 
-                String titulo = par.getKey().toString().trim().replaceAll(" +", " ");;
-                String texto = par.getValue().toString().trim().replaceAll(" +", " ");;
+                String titulo = par.getKey().toString().trim().replaceAll("\n+", "\n").replaceAll("\n", ": ").replaceAll(" +", " ");
+                String texto = par.getValue().toString().trim().replaceAll(" +", " ");
 
                 doc.add(new StringField("titulo", titulo, Field.Store.YES));
                 doc.add(new TextField("texto", texto, Field.Store.YES));
