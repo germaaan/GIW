@@ -10,8 +10,10 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import org.apache.commons.io.FileUtils;
 import static org.apache.lucene.index.DirectoryReader.indexExists;
 import org.apache.lucene.store.FSDirectory;
 
@@ -52,6 +54,7 @@ public class Interfaz extends javax.swing.JFrame {
         opcionAcercaDe = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("GIW: Práctica 3 - Germán Martínez Maldonado");
         setResizable(false);
 
         campoBusqueda.setEditable(false);
@@ -209,15 +212,55 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_accionCargarIndice
 
     private void accionGuardarNoticia(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionGuardarNoticia
-        // TODO add your handling code here:
+        JFileChooser dlg = new JFileChooser();
+
+        dlg.setAcceptAllFileFilterUsed(true);
+
+        int resp = dlg.showSaveDialog(this);
+
+        if (resp == JFileChooser.APPROVE_OPTION) {
+            File f = dlg.getSelectedFile();
+
+            if (f.exists()) {
+                int sobre = JOptionPane.showConfirmDialog(this,
+                        "¿Desea sobreescribir el archivo \""
+                        + dlg.getSelectedFile().getName() + "\"?",
+                        "Sobreescribir archivo",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (sobre == JOptionPane.YES_OPTION) {
+                    try {
+                        FileUtils.writeStringToFile(f, this.listaResultados.getSelectedValue()
+                                + "\n\n\n" + this.areaNoticias.getText(), "UTF-8");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } else {
+                try {
+                    FileUtils.writeStringToFile(f, this.areaNoticias.getText(), "UTF-8");
+                } catch (IOException ex) {
+                    Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }//GEN-LAST:event_accionGuardarNoticia
 
     private void accionSalir(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionSalir
-        // TODO add your handling code here:
+        int salir = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea salir?",
+                "Salir", JOptionPane.YES_NO_OPTION);
+
+        if (salir == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_accionSalir
 
     private void accionAcercaDe(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionAcercaDe
-        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this,
+                "Gestión de Información en la Web \nPráctica 3: Desarrollo de un Sistema de "
+                + "Recuperación de Información con Lucene \nDesarrollado por "
+                + "Germán Martínez Maldonado", "Información sobre el programa",
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_accionAcercaDe
 
     private void accionBuscar(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accionBuscar
