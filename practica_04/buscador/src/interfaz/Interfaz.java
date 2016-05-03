@@ -44,9 +44,9 @@ public class Interfaz extends javax.swing.JFrame {
         panelNoticias = new javax.swing.JScrollPane();
         areaNoticias = new javax.swing.JTextArea();
         barraMenu = new javax.swing.JMenuBar();
-        menuAcciones = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menuOpciones = new javax.swing.JMenu();
+        opcionCargarIndice = new javax.swing.JMenuItem();
+        opcionGuardarNoticia = new javax.swing.JMenuItem();
         opcionSalir = new javax.swing.JMenuItem();
         menuAyuda = new javax.swing.JMenu();
         opcionAcercaDe = new javax.swing.JMenuItem();
@@ -89,25 +89,25 @@ public class Interfaz extends javax.swing.JFrame {
         areaNoticias.setRows(5);
         panelNoticias.setViewportView(areaNoticias);
 
-        menuAcciones.setText("Acciones");
+        menuOpciones.setText("Opciones");
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK));
-        jMenuItem2.setText("Cargar índice");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        opcionCargarIndice.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK));
+        opcionCargarIndice.setText("Cargar índice");
+        opcionCargarIndice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 accionCargarIndice(evt);
             }
         });
-        menuAcciones.add(jMenuItem2);
+        menuOpciones.add(opcionCargarIndice);
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.ALT_MASK));
-        jMenuItem1.setText("Guardar noticia");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        opcionGuardarNoticia.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.ALT_MASK));
+        opcionGuardarNoticia.setText("Guardar noticia");
+        opcionGuardarNoticia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 accionGuardarNoticia(evt);
             }
         });
-        menuAcciones.add(jMenuItem1);
+        menuOpciones.add(opcionGuardarNoticia);
 
         opcionSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
         opcionSalir.setText("Salir");
@@ -116,9 +116,9 @@ public class Interfaz extends javax.swing.JFrame {
                 accionSalir(evt);
             }
         });
-        menuAcciones.add(opcionSalir);
+        menuOpciones.add(opcionSalir);
 
-        barraMenu.add(menuAcciones);
+        barraMenu.add(menuOpciones);
 
         menuAyuda.setText("Ayuda");
 
@@ -143,8 +143,8 @@ public class Interfaz extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelResultados, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(panelResultados, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(panelNoticias))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(campoBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
@@ -252,14 +252,12 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void accionSeleccionarNoticia(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accionSeleccionarNoticia
         if (evt.getClickCount() == 2) {
-
             String seleccionado = this.listaResultados.getSelectedValue();
 
-            System.out.println(seleccionado);
+            System.out.println("Noticia seleccionada: " + seleccionado);
 
-            String texto = (String) this.resultados.get(seleccionado);
-            System.out.println(this.resultados.containsKey(seleccionado));
-            System.out.println(texto);
+            String texto = this.resultados.get(seleccionado);
+            this.areaNoticias.setText(texto);
         }
     }//GEN-LAST:event_accionSeleccionarNoticia
 
@@ -302,12 +300,12 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JButton botonBuscar;
     private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoMensajeResultado;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JList<String> listaResultados;
-    private javax.swing.JMenu menuAcciones;
     private javax.swing.JMenu menuAyuda;
+    private javax.swing.JMenu menuOpciones;
     private javax.swing.JMenuItem opcionAcercaDe;
+    private javax.swing.JMenuItem opcionCargarIndice;
+    private javax.swing.JMenuItem opcionGuardarNoticia;
     private javax.swing.JMenuItem opcionSalir;
     private javax.swing.JScrollPane panelNoticias;
     private javax.swing.JScrollPane panelResultados;
