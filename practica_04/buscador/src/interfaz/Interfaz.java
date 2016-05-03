@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -253,8 +252,14 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void accionSeleccionarNoticia(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accionSeleccionarNoticia
         if (evt.getClickCount() == 2) {
+
             String seleccionado = this.listaResultados.getSelectedValue();
 
+            System.out.println(seleccionado);
+
+            String texto = (String) this.resultados.get(seleccionado);
+            System.out.println(this.resultados.containsKey(seleccionado));
+            System.out.println(texto);
         }
     }//GEN-LAST:event_accionSeleccionarNoticia
 

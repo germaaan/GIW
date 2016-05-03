@@ -2,7 +2,6 @@ package indexador;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +11,7 @@ import java.util.logging.Logger;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -55,7 +55,6 @@ public class Indexador {
             System.out.println("Número de noticias recuperadas: " + noticias.size());
 
             Directory directory = FSDirectory.open(new File(indice));
-
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
             IndexWriter iwriter = new IndexWriter(directory, config);
 
@@ -65,9 +64,11 @@ public class Indexador {
 
                 Document doc = new Document();
 
-                doc.add(new Field("titulo", par.getKey().toString(), Field.Store.YES, Field.Index.ANALYZED));
-                //Añadir tokenstream filters
-                doc.add(new TextField("texto", new StringReader(par.getValue().toString())));
+                String titulo = par.getKey().toString().trim().replaceAll(" +", " ");;
+                String texto = par.getValue().toString().trim().replaceAll(" +", " ");;
+
+                doc.add(new StringField("titulo", titulo, Field.Store.YES));
+                doc.add(new TextField("texto", texto, Field.Store.YES));
 
                 iwriter.addDocument(doc);
             }

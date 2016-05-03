@@ -33,7 +33,12 @@ public class Utils {
 
         for (File f : archivos) {
             if (f.isFile()) {
-                listaArchivos.add(f.getName());
+                String nombre = f.getName();
+                String extension = nombre.substring(nombre.lastIndexOf('.') + 1, nombre.length());
+
+                if (extension.equals("SGML") || extension.equals("sgml")) {
+                    listaArchivos.add(nombre);
+                }
             }
         }
 
