@@ -1,7 +1,9 @@
 package indexador;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,11 +35,53 @@ public class Indexador {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String documentos = "/home/germaaan/GIW/documentos/";
-        String palabrasVacias = "/home/germaaan/GIW/palabras_vacias_utf8.txt";
-        String indice = "/home/germaaan/GIW/indice";
+        try {
+            System.out.println("Introduzca la ruta del directorio donde se encuentra la "
+                    + "colección documental a indexar: ");
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String documentos = br.readLine();
 
-        Indexador indexador = new Indexador(documentos, palabrasVacias, indice);
+            System.out.println("\nIntroduzca la ruta del archivo de palabras vacías a emplear "
+                    + "por el analizador: ");
+            br = new BufferedReader(new InputStreamReader(System.in));
+            String palabrasVacias = br.readLine();
+
+            System.out.println("\nIntroduzca la ruta donde alojar los índices: ");
+            br = new BufferedReader(new InputStreamReader(System.in));
+            String indice = br.readLine();
+
+            File dirDocumentos = new File(documentos);
+            File arcPalabrasVacias = new File(palabrasVacias);
+            File dirIndices = new File(indice);
+
+            if (dirDocumentos.exists() && dirDocumentos.isDirectory()) {
+                if (arcPalabrasVacias.exists()) {
+                    if (dirIndices.exists() && dirIndices.isDirectory()) {
+                        if (documentos.charAt(documentos.length() - 1) != '/') {
+                            documentos += "/";
+                        }
+
+                        if (indice.charAt(indice.length() - 1) != '/') {
+                            indice += "/";
+                        }
+
+                        Indexador indexador = new Indexador(documentos, palabrasVacias,
+                                indice);
+                    } else {
+                        System.err.println("\n\nEl directorio introducido para los índices no "
+                                + "es válido.");
+                    }
+                } else {
+                    System.err.println("\n\nEl archivo de palabras vacías introducido no es "
+                            + "válido.");
+                }
+            } else {
+                System.err.println("\n\nEl directorio introducido para la colección documental "
+                        + "no es válido.");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Indexador.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Indexador(String documentos, String palabrasVacias, String indice) {
@@ -45,7 +89,7 @@ public class Indexador {
             SpanishAnalyzer analyzer = new SpanishAnalyzer(Version.LUCENE_43,
                     utils.getPalabrasVacias(palabrasVacias));
 
-            System.out.println("Número de palabras vacías reconocidas: " + analyzer.getStopwordSet().size());
+            System.out.println("\n\nNúmero de palabras vacías reconocidas: " + analyzer.getStopwordSet().size());
 
             System.out.println("Convirtiendo a XML todos los archivos SGML...");
             ArrayList<String> archivos = new ArrayList(convertirDocumentos(documentos));
@@ -62,9 +106,11 @@ public class Indexador {
             boolean existeIndice = indexExists(FSDirectory.open(new File(indice)));
 
             if (existeIndice) {
+                System.out.println("Índice existente en \"" + indice + "\". Eliminando...");
                 iwriter.deleteAll();
             }
 
+            System.out.println("Creando nuevo índice...");
             Iterator<Map.Entry<String, String>> iterador = noticias.entrySet().iterator();
             while (iterador.hasNext()) {
                 Map.Entry par = (Map.Entry) iterador.next();

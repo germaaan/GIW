@@ -29,6 +29,7 @@ public class Utils {
 
     public ArrayList<String> getListaArchivos(String ruta) {
         ArrayList<String> listaArchivos = new ArrayList<>();
+
         File[] archivos = new File(ruta).listFiles();
 
         for (File f : archivos) {
