@@ -12,8 +12,8 @@ public class Usuario {
     private final int id;
     private HashMap<Integer, Integer> calificaciones;
     private int valorTotal;
-    private final int numCalif;
-    private final float promedio;
+    private final int numValor;
+    private final float promedioValor;
 
     public Usuario(int id, HashMap<Integer, Integer> calificaciones) {
         this.id = id;
@@ -28,8 +28,8 @@ public class Usuario {
             this.valorTotal += d;
         }
 
-        this.numCalif = this.calificaciones.size();
-        this.promedio = this.valorTotal / this.numCalif;
+        this.numValor = this.calificaciones.size();
+        this.promedioValor = this.valorTotal / this.numValor;
     }
 
     public int getId() {
@@ -40,11 +40,11 @@ public class Usuario {
         return this.valorTotal;
     }
 
-    public int getNumCalif() {
-        return this.numCalif;
+    public int getNumValor() {
+        return this.numValor;
     }
 
-    public float getCalificacionesPromedio() {
-        return this.promedio;
+    public float getPromedioValor() {
+        return this.promedioValor;
     }
 }

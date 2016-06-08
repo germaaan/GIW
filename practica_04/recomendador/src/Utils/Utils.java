@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
+import java.util.Scanner;
 import recomendador.Recomendador;
 
 /**
@@ -83,5 +85,45 @@ public class Utils {
         }
 
         return usuarios;
+    }
+
+    public HashMap<Integer, Integer> introducirValoraciones(ArrayList<Pelicula> peliculas) {
+        HashMap<Integer, Integer> valoraciones = new HashMap<>();
+
+        Random aleatorio = new Random();
+        Scanner in = new Scanner(System.in);
+        int num = -1;
+
+        for (int i = 0; i < 10; i++) {
+            int index = aleatorio.nextInt(peliculas.size());
+            peliculas.get(index);
+            String nombre = peliculas.get(index).getTitulo();
+
+            boolean error = false;
+            do {
+                if (!error) {
+                    System.out.println("\nIntroduzca valoración para \"" + nombre + "\" (0-5):");
+                } else {
+                    System.out.println("\nERROR: valoración no válido.");
+                    System.out.println("Introduzca valoración para \"" + nombre + "\" (0-5):");
+                }
+
+                try {
+                    num = Integer.parseInt(in.nextLine());
+                } catch (NumberFormatException nfe) {
+                    error = true;
+                }
+
+                if (num < 0 || num > 5) {
+                    error = true;
+                    num = -1;
+                }
+
+            } while (num == -1);
+
+            valoraciones.put(peliculas.get(index).getId(), num);
+        }
+
+        return valoraciones;
     }
 }
