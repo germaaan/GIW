@@ -11,18 +11,18 @@ public class Usuario implements Comparable<Usuario> {
 
     private final int id;
     private HashMap<Integer, Integer> calificaciones;
-    private double coefPearson;
+    private double similitud;
     private int sumaValoraciones;
     private final int numValoraciones;
     private final double mediaValoraciones;
 
-    public Usuario(int id, HashMap<Integer, Integer> calificacithiss) {
+    public Usuario(int id, HashMap<Integer, Integer> calificaciones) {
         this.id = id;
-        this.calificaciones = new HashMap<>(calificacithiss);
-        this.coefPearson = 0.0;
+        this.calificaciones = new HashMap<>(calificaciones);
+        this.similitud = 0.0;
         this.sumaValoraciones = 0;
 
-        ArrayList<Integer> valores = new ArrayList<>(calificacithiss.values());
+        ArrayList<Integer> valores = new ArrayList<>(calificaciones.values());
         for (int valor : valores) {
             this.sumaValoraciones += valor;
         }
@@ -51,23 +51,23 @@ public class Usuario implements Comparable<Usuario> {
         return this.calificaciones;
     }
 
-    public double getCoefPearson() {
-        return this.coefPearson;
+    public double getSimilitud() {
+        return this.similitud;
     }
 
-    public void setCoefPearson(double coefPearson) {
-        this.coefPearson = coefPearson;
+    public void setSimilitud(double similitud) {
+        this.similitud = similitud;
     }
 
     @Override
     public int compareTo(Usuario otro) {
         int returnVal = 0;
 
-        if (this.coefPearson < otro.coefPearson) {
+        if (this.similitud < otro.similitud) {
             returnVal = 1;
-        } else if (this.coefPearson > otro.coefPearson) {
+        } else if (this.similitud > otro.similitud) {
             returnVal = -1;
-        } else if (this.coefPearson == otro.coefPearson) {
+        } else if (this.similitud == otro.similitud) {
             returnVal = 0;
         }
         return returnVal;

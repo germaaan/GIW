@@ -158,7 +158,7 @@ public class Utils {
             double numerador = 0.0;
             double delta1 = 0;
             double delta2 = 0;
-            double pearson = 0.0;
+            double similitud = 0.0;
 
             if (coincidencias.size() > 0) {
                 Iterator<Integer> it2 = coincidencias.iterator();
@@ -179,15 +179,15 @@ public class Utils {
                 double prueba = 0.0;
 
                 if (denominador != 0.0) {
-                    pearson = numerador / (delta1 * delta2);
+                    similitud = numerador / (delta1 * delta2);
                 } else {
-                    pearson = 0.0;
+                    similitud = 0.0;
                 }
             } else {
-                pearson = 0.0;
+                similitud = 0.0;
             }
 
-            usuario.setCoefPearson(pearson);
+            usuario.setSimilitud(similitud);
         }
     }
 
