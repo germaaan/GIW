@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import static java.lang.Math.sqrt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -127,5 +128,65 @@ public class Utils {
         }
 
         return valoraciones;
+    }
+
+    public void calculaSimilitudes(ArrayList<Usuario> usuarios, HashMap<Integer, Integer> calificacionesUsuario) {
+        Iterator<Usuario> it = usuarios.iterator();
+
+        while (it.hasNext()) {
+            Usuario usuario = it.next();
+            HashMap<Integer, Integer> calificacionesDatos = new HashMap<>(usuario.getCalificaciones());
+            double media2 = usuario.getMediaValoraciones();
+
+            int sumaValoraciones = 0;
+            ArrayList<Integer> valores = new ArrayList<>(calificacionesUsuario.values());
+            for (int valor : valores) {
+                sumaValoraciones += valor;
+            }
+            int numValoraciones = calificacionesUsuario.size();
+            double media1 = sumaValoraciones / numValoraciones;
+
+            ArrayList<Integer> coincidencias = new ArrayList<>();
+
+            for (int pelicula : calificacionesUsuario.keySet()) {
+                if (calificacionesDatos.containsKey(pelicula)) {
+                    coincidencias.add(pelicula);
+                }
+            }
+
+            double numerador = 0.0;
+            double delta1 = 0;
+            double delta2 = 0;
+            double pearson = 0.0;
+
+            if (coincidencias.size() > 0) {
+                Iterator<Integer> it2 = coincidencias.iterator();
+                while (it2.hasNext()) {
+                    int indice = it2.next();
+                    int u = calificacionesUsuario.get(indice);
+                    int v = calificacionesDatos.get(indice);
+                    numerador += ((u - media1) * (v - media2));
+                    delta1 += Math.pow((u - media1), 2);
+                    delta2 += Math.pow((v - media2), 2);
+                }
+
+                delta1 = sqrt(delta1);
+                delta2 = sqrt(delta2);
+
+                double denominador = delta1 * delta2;
+
+                double prueba = 0.0;
+
+                if (denominador != 0.0) {
+                    pearson = numerador / (delta1 * delta2);
+                } else {
+                    pearson = 0.0;
+                }
+            } else {
+                pearson = 0.0;
+            }
+
+            usuario.setCoefPearson(pearson);
+        }
     }
 }
