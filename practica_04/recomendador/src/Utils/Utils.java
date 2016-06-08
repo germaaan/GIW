@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import static java.lang.Math.sqrt;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -188,5 +189,13 @@ public class Utils {
 
             usuario.setCoefPearson(pearson);
         }
+    }
+
+    public ArrayList<Usuario> seleccionarVecinos(ArrayList<Usuario> usuarios) {
+        Collections.sort(usuarios);
+
+        ArrayList<Usuario> vecinos = new ArrayList<>(usuarios.subList(0, 10));
+
+        return vecinos;
     }
 }

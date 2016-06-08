@@ -27,24 +27,8 @@ public class Recomendador {
         HashMap<Integer, Integer> calificacionesUsuario = new HashMap<>(utils.introducirValoraciones(peliculas));
 
         utils.calculaSimilitudes(usuarios, calificacionesUsuario);
-        
-        Collections.sort(usuarios);
+        ArrayList<Usuario> vecinos = new ArrayList<>(utils.seleccionarVecinos(usuarios));
 
-        for (int i = 0; i < 10; i++) {
-            Usuario usuario = usuarios.get(i);
-            System.out.println("Usuario: " + usuario.getId() + " Coef: " + usuario.getCoefPearson());
-        }
-
-        ArrayList<Usuario> vecinos = new ArrayList<Usuario>(usuarios.subList(0, 10));
-        System.out.println(vecinos.size());
-
-        Iterator<Usuario> it = vecinos.iterator();
-
-        while (it.hasNext()) {
-            Usuario usuario = it.next();
-            System.out.println("Usuario: " + usuario.getId() + " Coef: " + usuario.getCoefPearson());
-        }
-        
         //calcular predicciones
     }
 
