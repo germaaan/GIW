@@ -15,9 +15,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import recomendador.Recomendador;
 
@@ -201,7 +204,100 @@ public class Utils {
 
         return vecinos;
     }
-    
-    public void seleccionarRecomendaciones() {
+
+    public void seleccionarRecomendaciones(ArrayList<Usuario> vecinos, HashMap<Integer, Integer> calificacionesUsuario, ArrayList<Pelicula> peliculas) {
+        HashSet<Integer> candidatas = new HashSet<>();
+
+        Iterator<Usuario> it = vecinos.iterator();
+
+        while (it.hasNext()) {
+            Usuario vecino = it.next();
+
+            for (int pelicula : vecino.getCalificaciones().keySet()) {
+                if (!calificacionesUsuario.containsKey(pelicula)) {
+                    candidatas.add(pelicula);
+                }
+            }
+        }
+
+        System.out.println("\nLos usuarios más similares a ti han visto un total de "
+                + candidatas.size() + " películas que tú no has visto todavía.");
+
+        Iterator<Integer> it2 = candidatas.iterator();
+
+        TreeMap<Integer, Double> predicciones = new TreeMap<>();
+
+        while (it2.hasNext()) {
+            int pelicula = it2.next();
+
+            it = vecinos.iterator();
+
+            double numerador = 0.0;
+            double denominador = 0.0;
+
+            while (it.hasNext()) {
+                Usuario vecino = it.next();
+                HashMap<Integer, Integer> calificaciones = new HashMap<>(vecino.getCalificaciones());
+
+                if (calificaciones.containsKey(pelicula)) {
+                    int calificacion = vecino.getCalificaciones().get(pelicula);
+                    double similitud = vecino.getSimilitud();
+
+                    if (similitud > 0.5) {
+                        numerador += similitud * calificacion;
+                    } else {
+                        numerador -= similitud * calificacion;
+                    }
+
+                    denominador += vecino.getSimilitud();
+                }
+            }
+
+            double prediccion = numerador / denominador;
+
+            predicciones.put(pelicula, prediccion);
+        }
+
+        SortedMap prediccionesOrdenadas = new TreeMap(new Comparador(predicciones));
+
+        prediccionesOrdenadas.putAll(predicciones);
+
+        HashMap<Integer, String> listaPeliculas = new HashMap<>();
+        Iterator<Pelicula> it3 = peliculas.iterator();
+        while (it3.hasNext()) {
+            Pelicula pelicula = it3.next();
+            listaPeliculas.put(pelicula.getId(), pelicula.getTitulo());
+        }
+
+        int aux = 1;
+
+        System.out.println("\nTus recomendaciones son:");
+        for (Iterator iter = prediccionesOrdenadas.keySet().iterator(); iter.hasNext();) {
+            Integer key = (Integer) iter.next();
+
+            System.out.println(aux + "º. " + listaPeliculas.get(key) + ": " + prediccionesOrdenadas.get(key));
+            aux++;
+
+            if (aux == 6) {
+                break;
+            }
+        }
+    }
+
+    private static class Comparador implements Comparator {
+
+        private Map mapa = null;
+
+        public Comparador(Map data) {
+            super();
+            this.mapa = data;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2) {
+            Double e1 = (Double) mapa.get(o1);
+            Double e2 = (Double) mapa.get(o2);
+            return e2.compareTo(e1);
+        }
     }
 }
