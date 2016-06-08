@@ -1,14 +1,10 @@
 package recomendador;
 
 import Utils.Utils;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import data.Pelicula;
-import java.io.FileNotFoundException;
+import data.Usuario;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  *
@@ -91,5 +87,6 @@ public class Recomendador {
 
     public Recomendador() throws IOException {
         ArrayList<Pelicula> peliculas = new ArrayList<>(utils.cargarPeliculas());
+        ArrayList<Usuario> usuarios = new ArrayList<>(utils.cargarUsuarios());
     }
 }
