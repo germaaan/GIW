@@ -116,8 +116,8 @@ public class Utils {
                 }
 
                 try {
-                    //num = Integer.parseInt(in.nextLine());
-                    num = aleatorio.nextInt(5) + 1;
+                    num = Integer.parseInt(in.nextLine());
+                    //num = aleatorio.nextInt(5) + 1;
                 } catch (NumberFormatException nfe) {
                     error = true;
                 }
@@ -129,7 +129,7 @@ public class Utils {
 
             } while (num == -1);
 
-            System.out.println(num);
+            //System.out.println(num);
             valoraciones.put(peliculas.get(index).getId(), num);
         }
 
@@ -271,15 +271,19 @@ public class Utils {
 
         int aux = 1;
 
-        System.out.println("\nTus recomendaciones son:");
+        System.out.println("\nPeliculas que te pueden interesar (valoracion predecida > 4):");
         for (Iterator iter = prediccionesOrdenadas.keySet().iterator(); iter.hasNext();) {
             Integer key = (Integer) iter.next();
+            String titulo = listaPeliculas.get(key);
+            Double prediccion = (Double) prediccionesOrdenadas.get(key);
 
-            System.out.println(aux + "º. " + listaPeliculas.get(key) + ": " + prediccionesOrdenadas.get(key));
-            aux++;
+            if (prediccion >= 4) {
+                System.out.println(aux + "º. " + titulo + ": " + prediccion);
+                aux++;
 
-            if (aux == 6) {
-                break;
+                if (aux == 6) {
+                    break;
+                }
             }
         }
     }
