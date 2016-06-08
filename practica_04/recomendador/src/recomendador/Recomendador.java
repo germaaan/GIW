@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.InputMismatchException;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
@@ -21,6 +24,7 @@ public class Recomendador {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, IOException {
         HashMap<Integer, String> peliculas = new HashMap<>();
         Multimap<Integer, int[]> valoraciones = HashMultimap.create();
+        HashMap<Integer, Integer> valoracionesUsuario = new HashMap<>();
         
         InputStream is = Recomendador.class.getResourceAsStream("/resources/u.item");
         BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -41,7 +45,7 @@ public class Recomendador {
         
         /*
         for (Map.Entry<Integer, String> entry : peliculas.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
+        System.out.println(entry.getKey() + " : " + entry.getValue());
         }
         */
         
@@ -65,10 +69,43 @@ public class Recomendador {
         
         Collection<int[]> list = valoraciones.get(1);
         
-        System.out.println(list.size());
-        
         //pedir valoraciones usuario (primero fijas, luego variables)
-        //calcular vecinos
+        
+        Random aleatorio = new Random();
+        Scanner in = new Scanner(System.in);
+        int num = -1;
+        
+        for(int i=0; i<10; i++){
+            ArrayList<Integer> id = new ArrayList<>(peliculas.keySet());
+            int randomKey = id.get(aleatorio.nextInt(id.size()));
+            String nombre = peliculas.get(randomKey);
+            
+            boolean error = false;
+            
+            do{
+                if (!error){
+                    System.out.println("\nIntroduzca valoración para \""+nombre+"\" (0-5):");
+                }
+                else {
+                    System.out.println("\nERROR: valoración no válido.");
+                    System.out.println("Introduzca valoración para \""+nombre+"\" (0-5):");
+                }
+                
+                try{
+                    num = Integer.parseInt(in.nextLine());
+                } catch (NumberFormatException nfe){
+                    error = true;
+                }
+                
+                if (num < 0 || num > 5){
+                    error = true;
+                    num = -1;
+                }
+                
+            }while(num == -1);
+        }
+        
+        //seleccionar vecinos
         //calcular predicciones
     }
 }
