@@ -13,10 +13,12 @@ import static java.lang.Math.sqrt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.TreeMap;
 import recomendador.Recomendador;
 
 /**
@@ -96,7 +98,7 @@ public class Utils {
         Scanner in = new Scanner(System.in);
         int num = -1;
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             int index = aleatorio.nextInt(peliculas.size());
             peliculas.get(index);
             String nombre = peliculas.get(index).getTitulo();
@@ -104,20 +106,20 @@ public class Utils {
             boolean error = false;
             do {
                 if (!error) {
-                    System.out.println("\nIntroduzca valoración para \"" + nombre + "\" (0-5):");
+                    System.out.println("\nIntroduzca valoración para \"" + nombre + "\" (1-5):");
                 } else {
                     System.out.println("\nERROR: valoración no válido.");
-                    System.out.println("Introduzca valoración para \"" + nombre + "\" (0-5):");
+                    System.out.println("Introduzca valoración para \"" + nombre + "\" (1-5):");
                 }
 
                 try {
                     //num = Integer.parseInt(in.nextLine());
-                    num = aleatorio.nextInt(5);
+                    num = aleatorio.nextInt(5) + 1;
                 } catch (NumberFormatException nfe) {
                     error = true;
                 }
 
-                if (num < 0 || num > 5) {
+                if (num <= 0 || num > 5) {
                     error = true;
                     num = -1;
                 }
@@ -160,31 +162,32 @@ public class Utils {
             double delta2 = 0;
             double similitud = 0.0;
 
-            if (coincidencias.size() > 0) {
+            int n = coincidencias.size();
+
+            if (n > 0) {
+
                 Iterator<Integer> it2 = coincidencias.iterator();
                 while (it2.hasNext()) {
                     int indice = it2.next();
                     int u = calificacionesUsuario.get(indice);
                     int v = calificacionesDatos.get(indice);
-                    numerador += ((u - media1) * (v - media2));
-                    delta1 += Math.pow((u - media1), 2);
-                    delta2 += Math.pow((v - media2), 2);
+
+                    double aux1 = u - media1;
+                    double aux2 = v - media2;
+
+                    numerador += aux1 * aux2;
+
+                    delta1 += aux1 * aux1;
+                    delta2 += aux2 * aux2;
                 }
 
-                delta1 = sqrt(delta1);
-                delta2 = sqrt(delta2);
-
-                double denominador = delta1 * delta2;
-
-                double prueba = 0.0;
-
-                if (denominador != 0.0) {
-                    similitud = numerador / (delta1 * delta2);
+                if (delta1 == 0.0 || delta2 == 0.0) {
+                    similitud = -1.0;
                 } else {
-                    similitud = 0.0;
+                    similitud = numerador / (Math.sqrt(delta1) * Math.sqrt(delta2));
                 }
             } else {
-                similitud = 0.0;
+                similitud = -1.0;
             }
 
             usuario.setSimilitud(similitud);
@@ -197,5 +200,8 @@ public class Utils {
         ArrayList<Usuario> vecinos = new ArrayList<>(usuarios.subList(0, 10));
 
         return vecinos;
+    }
+    
+    public void seleccionarRecomendaciones() {
     }
 }
