@@ -11,40 +11,41 @@ public class Usuario {
 
     private final int id;
     private HashMap<Integer, Integer> calificaciones;
-    private int valorTotal;
-    private final int numValor;
-    private final float promedioValor;
+    private int sumaValoraciones;
+    private final int numValoraciones;
+    private final float mediaValoraciones;
 
     public Usuario(int id, HashMap<Integer, Integer> calificaciones) {
         this.id = id;
+        this.calificaciones = new HashMap<>(calificaciones);
+        this.sumaValoraciones = 0;
 
-        this.calificaciones = new HashMap<>();
-        this.calificaciones.putAll(calificaciones);
-
-        this.valorTotal = 0;
-
-        ArrayList<Integer> valoraciones = new ArrayList<>(calificaciones.values());
-        for (int d : valoraciones) {
-            this.valorTotal += d;
+        ArrayList<Integer> valores = new ArrayList<>(calificaciones.values());
+        for (int valor : valores) {
+            this.sumaValoraciones += valor;
         }
 
-        this.numValor = this.calificaciones.size();
-        this.promedioValor = this.valorTotal / this.numValor;
+        this.numValoraciones = this.calificaciones.size();
+        this.mediaValoraciones = this.sumaValoraciones / this.numValoraciones;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public int getValorTotal() {
-        return this.valorTotal;
+    public int getSumaValoraciones() {
+        return this.sumaValoraciones;
     }
 
-    public int getNumValor() {
-        return this.numValor;
+    public int getNumValoraciones() {
+        return this.numValoraciones;
     }
 
-    public float getPromedioValor() {
-        return this.promedioValor;
+    public float getMediaValoraciones() {
+        return this.mediaValoraciones;
+    }
+
+    public HashMap<Integer, Integer> getCalificaciones() {
+        return this.calificaciones;
     }
 }

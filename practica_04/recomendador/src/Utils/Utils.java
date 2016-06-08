@@ -109,7 +109,8 @@ public class Utils {
                 }
 
                 try {
-                    num = Integer.parseInt(in.nextLine());
+                    //num = Integer.parseInt(in.nextLine());
+                    num = aleatorio.nextInt(5);
                 } catch (NumberFormatException nfe) {
                     error = true;
                 }
@@ -121,6 +122,7 @@ public class Utils {
 
             } while (num == -1);
 
+            System.out.println(num);
             valoraciones.put(peliculas.get(index).getId(), num);
         }
 
