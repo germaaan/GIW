@@ -2,7 +2,7 @@ package data;
 
 /**
  * Película existentes en la base de datos.
- * 
+ *
  * @author Germán Martínez Maldonado
  */
 public class Pelicula {
@@ -13,8 +13,7 @@ public class Pelicula {
     private final String titulo;
 
     /**
-     * Crea una película nueva a partir de un identificador
-     * y un título.
+     * Crea una película nueva a partir de un identificador y un título.
      *
      * @param id Identificador de la película
      * @param titulo Título de la película
@@ -26,7 +25,7 @@ public class Pelicula {
 
     /**
      * Obtiene el código de identificación de la película.
-     * 
+     *
      * @return Identificador de la película
      */
     public int getId() {
@@ -35,7 +34,7 @@ public class Pelicula {
 
     /**
      * Obtiene el título de la película.
-     * 
+     *
      * @return Título de la película
      */
     public String getTitulo() {

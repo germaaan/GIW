@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 /**
  * Usuarios existentes en la base de datos.
- * 
+ *
  * @author Germán Martínez Maldonado
  */
 public class Usuario implements Comparable<Usuario> {
@@ -26,9 +26,9 @@ public class Usuario implements Comparable<Usuario> {
     /**
      * Crea un usuario nuevo a partir de un identificador y un conjunto de
      * parejas de calificaciones.
-     * 
+     *
      * @param id
-     * @param calificaciones 
+     * @param calificaciones
      */
     public Usuario(int id, HashMap<Integer, Integer> calificaciones) {
         this.id = id;
@@ -47,7 +47,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Obtiene el idenficador del usuario.
-     * 
+     *
      * @return Identificador del usuario
      */
     public int getId() {
@@ -56,7 +56,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Obtiene la suma del total de valoraciones del usuario.
-     * 
+     *
      * @return Suma total de valoraciones del usuario
      */
     public int getSumaValoraciones() {
@@ -65,7 +65,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Obtiene el número de valoraciones del usuario.
-     * 
+     *
      * @return Número total de valoraciones del usuario
      */
     public int getNumValoraciones() {
@@ -74,7 +74,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Obtiene la valoración media del usuario.
-     * 
+     *
      * @return Valoración media dada por el usuario
      */
     public double getMediaValoraciones() {
@@ -83,7 +83,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Obtiene las calificaciones dadas por el usuario.
-     * 
+     *
      * @return Conjunto de parejas de calificaciones dadas por el usuario
      */
     public HashMap<Integer, Integer> getCalificaciones() {
@@ -92,7 +92,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Obtiene el grado de similitud con el usuario de la aplicación.
-     * 
+     *
      * @return Grado de similitud con el usuario de la aplicación
      */
     public double getSimilitud() {
@@ -101,7 +101,7 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Establece el grado de similitud con el usuario de la aplicación.
-     * 
+     *
      * @param similitud Nuevo valor para el grado de similitud
      */
     public void setSimilitud(double similitud) {
@@ -109,12 +109,12 @@ public class Usuario implements Comparable<Usuario> {
     }
 
     /**
-     * Devuelve si un usuario es "menor" o "mayor" de otro respecto de su 
+     * Devuelve si un usuario es "menor" o "mayor" de otro respecto de su
      * similitud con el usuario de la aplicación.
-     * 
+     *
      * @param otro Usuario con el que se realiza la comparación
      * @return 1 si el usuario tiene una similitud menor con el usuario de la
-     * aplicación que el otro usuario, -1 en caso contrario y 0 en caso de que 
+     * aplicación que el otro usuario, -1 en caso contrario y 0 en caso de que
      * ambos tengan la misma similitu con el usuario de la aplicación
      */
     @Override
