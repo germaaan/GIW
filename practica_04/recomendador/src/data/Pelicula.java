@@ -1,21 +1,22 @@
 package data;
 
 /**
- *
+ * Película existentes en la base de datos.
+ * 
  * @author Germán Martínez Maldonado
  */
 public class Pelicula {
 
-    // Código de identificación de la película
+    // Identificador de la película
     private final int id;
     // Título de la película
     private final String titulo;
 
     /**
-     * Crea una película nueva a partir de un código de identificación 
+     * Crea una película nueva a partir de un identificador
      * y un título.
      *
-     * @param id Código de identificación de la película
+     * @param id Identificador de la película
      * @param titulo Título de la película
      */
     public Pelicula(int id, String titulo) {
@@ -26,7 +27,7 @@ public class Pelicula {
     /**
      * Obtiene el código de identificación de la película.
      * 
-     * @return Código de identificación de la película
+     * @return Identificador de la película
      */
     public int getId() {
         return this.id;

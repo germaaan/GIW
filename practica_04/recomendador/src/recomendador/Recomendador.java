@@ -6,7 +6,6 @@ import data.Usuario;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  *
@@ -14,7 +13,7 @@ import java.util.Iterator;
  */
 public class Recomendador {
 
-    private Utils utils = new Utils();
+    private final Utils utils = new Utils();
 
     public static void main(String[] args) throws IOException {
         Recomendador recomendador = new Recomendador();
