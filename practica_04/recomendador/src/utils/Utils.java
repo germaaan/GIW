@@ -1,4 +1,4 @@
-package Utils;
+package utils;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

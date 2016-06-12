@@ -1,6 +1,6 @@
 package recomendador;
 
-import Utils.Utils;
+import utils.Utils;
 import data.Pelicula;
 import data.Usuario;
 import java.io.IOException;
