@@ -365,7 +365,7 @@ public class Utils {
             predicciones.put(pelicula, prediccion);
         }
 
-        // Ordena la lista de películas en función de su valor predecido de mayor
+        // Ordena la lista de películas en función de su valor predicho de mayor
         // a menor
         SortedMap prediccionesOrdenadas = new TreeMap(new Comparador(predicciones));
 
@@ -383,8 +383,8 @@ public class Utils {
         int aux = 1;
 
         // Se muestran las 5 primeras predicciones (siempre y cuando se valoración
-        // predecida sea mayor que 4/5)
-        System.out.println("\nPeliculas que te pueden interesar (valoracion predecida > 4):");
+        // predicho sea mayor que 4/5)
+        System.out.println("\nPeliculas que te pueden interesar (valoracion predicho > 4):");
         for (Iterator iter = prediccionesOrdenadas.keySet().iterator(); iter.hasNext();) {
             Integer key = (Integer) iter.next();
             String titulo = listaPeliculas.get(key);
