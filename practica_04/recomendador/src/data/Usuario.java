@@ -12,8 +12,8 @@ public class Usuario implements Comparable<Usuario> {
 
     // Identificador del usuario
     private final int id;
-    // Parejas película-calificación dada por el usuario
-    private final HashMap<Integer, Integer> calificaciones;
+    // Parejas película-valoración dada por el usuario
+    private final HashMap<Integer, Integer> valoraciones;
     // Grado de similitud con el usuario de la aplicación
     private double similitud;
     // Suma del valor total de las valoraciones
@@ -25,23 +25,23 @@ public class Usuario implements Comparable<Usuario> {
 
     /**
      * Crea un usuario nuevo a partir de un identificador y un conjunto de
-     * parejas de calificaciones.
+     * parejas de valoraciones.
      *
      * @param id
-     * @param calificaciones
+     * @param valoraciones
      */
-    public Usuario(int id, HashMap<Integer, Integer> calificaciones) {
+    public Usuario(int id, HashMap<Integer, Integer> valoraciones) {
         this.id = id;
-        this.calificaciones = new HashMap<>(calificaciones);
+        this.valoraciones = new HashMap<>(valoraciones);
         this.similitud = 0.0;
         this.sumaValoraciones = 0;
 
-        ArrayList<Integer> valores = new ArrayList<>(calificaciones.values());
+        ArrayList<Integer> valores = new ArrayList<>(valoraciones.values());
         for (int valor : valores) {
             this.sumaValoraciones += valor;
         }
 
-        this.numValoraciones = this.calificaciones.size();
+        this.numValoraciones = this.valoraciones.size();
         this.mediaValoraciones = this.sumaValoraciones / this.numValoraciones;
     }
 
@@ -82,12 +82,12 @@ public class Usuario implements Comparable<Usuario> {
     }
 
     /**
-     * Obtiene las calificaciones dadas por el usuario.
+     * Obtiene las valoraciones dadas por el usuario.
      *
-     * @return Conjunto de parejas de calificaciones dadas por el usuario
+     * @return Conjunto de parejas de valoraciones dadas por el usuario
      */
-    public HashMap<Integer, Integer> getCalificaciones() {
-        return this.calificaciones;
+    public HashMap<Integer, Integer> getValoraciones() {
+        return this.valoraciones;
     }
 
     /**

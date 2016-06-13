@@ -33,22 +33,25 @@ import recomendador.Recomendador;
 public class Utils {
 
     /**
+     * Carga todas las películas en el archivo de películas.
      *
-     * @return
+     * @return Lista de películas contenidas en el archivo de películas
      */
-    public ArrayList<Pelicula> cargarPeliculas() {
+    public ArrayList<Pelicula> cargaPeliculas() {
         ArrayList<Pelicula> peliculas = new ArrayList();
 
         InputStream is = null;
         BufferedReader br = null;
 
         try {
+            // Lee el archivo "u.item" con las películas
             is = Recomendador.class.getResourceAsStream("/resources/u.item");
             br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             String entrada = br.readLine();
 
             while (entrada != null) {
+                // Lee y añade cada una de las películas
                 String[] item = entrada.split("\\|");
 
                 int id = Integer.parseInt(item[0]);
@@ -76,50 +79,60 @@ public class Utils {
     }
 
     /**
-     * 
-     * @return 
+     * Carga todos los usuarios en el archivo de usuarios.
+     *
+     * @return Lista de usuarios de los que hay valoraciones en el archivo de
+     * valoraciones
      */
-    public ArrayList<Usuario> cargarUsuarios() {
+    public ArrayList<Usuario> cargaUsuarios() {
         ArrayList<Usuario> usuarios = new ArrayList<>();
-        Multimap<Integer, int[]> valoracionesOrdenadas = HashMultimap.create();
+        // Mapa de valor múltiple para agrupar todas las valoraciones de un mismo
+        // usuario según su identificador
+        Multimap<Integer, int[]> valoraciones = HashMultimap.create();
 
         InputStream is = null;
         BufferedReader br = null;
 
         try {
+            // Lee el archivo "u.item" con todas las valoraciones dadas por usuarios
             is = Recomendador.class.getResourceAsStream("/resources/u.data");
             br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             String entrada = br.readLine();
 
             while (entrada != null) {
+                // Lee cada una de las valoraciones y las añade al mapa
                 String[] item = entrada.split("\t");
 
                 int usuario = Integer.parseInt(item[0]);
                 int pelicula = Integer.parseInt(item[1]);
-                int calificacion = Integer.parseInt(item[2]);
+                int valoracion = Integer.parseInt(item[2]);
 
-                valoracionesOrdenadas.put(usuario, new int[]{pelicula, calificacion});
+                valoraciones.put(usuario, new int[]{pelicula, valoracion});
 
                 entrada = br.readLine();
             }
 
             br.close();
 
-            Iterator<Integer> it = valoracionesOrdenadas.keySet().iterator();
+            // Recorre el mapa en función de las claves (identificador de usuario)
+            Iterator<Integer> it = valoraciones.keySet().iterator();
 
             while (it.hasNext()) {
                 int usuario = it.next();
 
-                Collection<int[]> valores = valoracionesOrdenadas.get(usuario);
+                Collection<int[]> valores = valoraciones.get(usuario);
                 Iterator<int[]> it2 = valores.iterator();
 
+                // Añade en una mismo mapa todas las valoraciones del usuario
+                // tomando ahora el identificador de la película como clave
                 HashMap<Integer, Integer> valoracionesUsuario = new HashMap<>();
                 while (it2.hasNext()) {
                     int par[] = it2.next();
                     valoracionesUsuario.put(par[0], par[1]);
                 }
 
+                // Crea el usuario con su identificador y todas sus valoraciones
                 usuarios.add(new Usuario(usuario, valoracionesUsuario));
             }
         } catch (UnsupportedEncodingException ex) {
@@ -138,17 +151,19 @@ public class Utils {
     }
 
     /**
-     * 
-     * @param peliculas
-     * @return 
+     * Pide al usuario de la aplicación que califique 20 películas aleatorias
+     *
+     * @param peliculas Lista de películas
+     * @return Valoraciones dadas
      */
-    public HashMap<Integer, Integer> introducirValoraciones(ArrayList<Pelicula> peliculas) {
+    public HashMap<Integer, Integer> introduceValoraciones(ArrayList<Pelicula> peliculas) {
         HashMap<Integer, Integer> valoraciones = new HashMap<>();
 
         Random aleatorio = new Random();
         Scanner in = new Scanner(System.in);
         int num = -1;
 
+        // Pide la valoración para 20 películas elegidas de forma aleatoria
         for (int i = 0; i < 20; i++) {
             int index = aleatorio.nextInt(peliculas.size());
             peliculas.get(index);
@@ -169,6 +184,7 @@ public class Utils {
                     error = true;
                 }
 
+                // Solo se consideran valoraciones válidas aquellas entre 1-5
                 if (num <= 0 || num > 5) {
                     error = true;
                     num = -1;
@@ -183,33 +199,40 @@ public class Utils {
     }
 
     /**
-     * 
-     * @param usuarios
-     * @param calificacionesUsuario 
+     * Calcula la similitud de los usuarios en la base de datos con el usuario
+     * actual.
+     *
+     * @param usuarios Lista de usuarios en la base de datos
+     * @param valoracionesUsuario Valoraciones dadas por el usuario actual
      */
-    public void calculaSimilitudes(ArrayList<Usuario> usuarios, HashMap<Integer, Integer> calificacionesUsuario) {
+    public void calculaSimilitudes(ArrayList<Usuario> usuarios, HashMap<Integer, Integer> valoracionesUsuario) {
+        // Calculamos el valor total de las valoraciones, el número de valoraciones
+        // dadas y la valoración media de el usuario actual
+        int sumaValoracionesUsuario = 0;
+
+        ArrayList<Integer> valores = new ArrayList<>(valoracionesUsuario.values());
+
+        for (int valor : valores) {
+            sumaValoracionesUsuario += valor;
+        }
+
+        int numValoracionesUsuario = valoracionesUsuario.size();
+        double mediaUsuario = sumaValoracionesUsuario / numValoracionesUsuario;
+
         Iterator<Usuario> it = usuarios.iterator();
 
+        // Para cada usuario en la base de datos
         while (it.hasNext()) {
             Usuario usuario = it.next();
-            HashMap<Integer, Integer> calificacionesDatos = new HashMap<>(usuario.getCalificaciones());
-            double media2 = usuario.getMediaValoraciones();
-
-            int sumaValoraciones = 0;
-            
-            ArrayList<Integer> valores = new ArrayList<>(calificacionesUsuario.values());
-            
-            for (int valor : valores) {
-                sumaValoraciones += valor;
-            }
-            
-            int numValoraciones = calificacionesUsuario.size();
-            double media1 = sumaValoraciones / numValoraciones;
+            HashMap<Integer, Integer> valoracionesDatos = new HashMap<>(usuario.getValoraciones());
+            double media = usuario.getMediaValoraciones();
 
             ArrayList<Integer> coincidencias = new ArrayList<>();
 
-            for (int pelicula : calificacionesUsuario.keySet()) {
-                if (calificacionesDatos.containsKey(pelicula)) {
+            // Extraemos las películas que han valorado tanto el usuario en base
+            // de datos como el usuario actual
+            for (int pelicula : valoracionesUsuario.keySet()) {
+                if (valoracionesDatos.containsKey(pelicula)) {
                     coincidencias.add(pelicula);
                 }
             }
@@ -223,14 +246,16 @@ public class Utils {
 
             if (n > 0) {
                 Iterator<Integer> it2 = coincidencias.iterator();
-                
+
+                // Calculamos las componentes del coeficiente de correlación 
+                // de Pearson
                 while (it2.hasNext()) {
                     int indice = it2.next();
-                    int u = calificacionesUsuario.get(indice);
-                    int v = calificacionesDatos.get(indice);
+                    int u = valoracionesUsuario.get(indice);
+                    int v = valoracionesDatos.get(indice);
 
-                    double aux1 = u - media1;
-                    double aux2 = v - media2;
+                    double aux1 = u - mediaUsuario;
+                    double aux2 = v - media;
 
                     numerador += aux1 * aux2;
 
@@ -238,11 +263,15 @@ public class Utils {
                     delta2 += aux2 * aux2;
                 }
 
+                // Aplicamos la fórmula del coeficiente (siempre y cuando no haya
+                // ningún 0 en el denonimador)
                 if (delta1 == 0.0 || delta2 == 0.0) {
                     similitud = -1.0;
                 } else {
                     similitud = numerador / (Math.sqrt(delta1) * Math.sqrt(delta2));
                 }
+                // Si ambos usuarios no han valorado ninguna misma película, no se
+                // calcula el coeficiente de correlación
             } else {
                 similitud = -1.0;
             }
@@ -252,34 +281,42 @@ public class Utils {
     }
 
     /**
-     * 
-     * @param usuarios
-     * @return 
+     * Selecciona los 10 usuarios más similares al usuario actual en función de
+     * las valoraciones dadas a las mismas películas.
+     *
+     * @param usuarios Lista de usuarios en la base de datos
+     * @return Lista con los 10 usuarios más similares al usuario actual
      */
-    public ArrayList<Usuario> seleccionarVecinos(ArrayList<Usuario> usuarios) {
+    public ArrayList<Usuario> seleccionaVecinos(ArrayList<Usuario> usuarios) {
+        // Ordenamos la lista de usuarios de mayor a menor según el valor de su
+        // similitud con el usuario actual
         Collections.sort(usuarios);
 
+        // Creamos una lista de usuarios con los 10 primeros de la lista
         ArrayList<Usuario> vecinos = new ArrayList<>(usuarios.subList(0, 10));
 
         return vecinos;
     }
 
     /**
-     * 
-     * @param vecinos
-     * @param calificacionesUsuario
-     * @param peliculas 
+     * Muestra las recomendaciones de películas para el usuario actual.
+     *
+     * @param vecinos Lista con los usuarios más similares al usuario actual
+     * @param valoracionesUsuario Valoraciones dadas por el usuario actual
+     * @param peliculas Lista de películas
      */
-    public void seleccionarRecomendaciones(ArrayList<Usuario> vecinos, HashMap<Integer, Integer> calificacionesUsuario, ArrayList<Pelicula> peliculas) {
+    public void muestraRecomendaciones(ArrayList<Usuario> vecinos, HashMap<Integer, Integer> valoracionesUsuario, ArrayList<Pelicula> peliculas) {
         HashSet<Integer> candidatas = new HashSet<>();
 
         Iterator<Usuario> it = vecinos.iterator();
 
+        // Añade las películas vistas por los usuarios más similares que no haya
+        // visto el usuario actual
         while (it.hasNext()) {
             Usuario vecino = it.next();
 
-            for (int pelicula : vecino.getCalificaciones().keySet()) {
-                if (!calificacionesUsuario.containsKey(pelicula)) {
+            for (int pelicula : vecino.getValoraciones().keySet()) {
+                if (!valoracionesUsuario.containsKey(pelicula)) {
                     candidatas.add(pelicula);
                 }
             }
@@ -299,31 +336,43 @@ public class Utils {
 
             while (it.hasNext()) {
                 Usuario vecino = it.next();
-                HashMap<Integer, Integer> calificaciones = new HashMap<>(vecino.getCalificaciones());
+                HashMap<Integer, Integer> valoraciones = new HashMap<>(vecino.getValoraciones());
 
-                if (calificaciones.containsKey(pelicula)) {
-                    int calificacion = vecino.getCalificaciones().get(pelicula);
+                // Añade el valor ponderado correspondiente a la calificación
+                // que el usuario le dio a la película (si el usuario ha 
+                // calificado dicha película)
+                if (valoraciones.containsKey(pelicula)) {
+                    int valoracion = vecino.getValoraciones().get(pelicula);
                     double similitud = vecino.getSimilitud();
 
+                    // La ponderación consiste en que si el usuario tiene una 
+                    // buena similitud con el usuario actual su valoración suma,
+                    // en caso contrario resta
                     if (similitud > 0.5) {
-                        numerador += similitud * calificacion;
+                        numerador += similitud * valoracion;
                     } else {
-                        numerador -= similitud * calificacion;
+                        numerador -= similitud * valoracion;
                     }
 
                     denominador += vecino.getSimilitud();
                 }
             }
 
+            // Calcula la predicción para una película en función de todos las 
+            // valoraciones ponderadas dadas por los distintos usuarios
             double prediccion = numerador / denominador;
 
             predicciones.put(pelicula, prediccion);
         }
 
+        // Ordena la lista de películas en función de su valor predecido de mayor
+        // a menor
         SortedMap prediccionesOrdenadas = new TreeMap(new Comparador(predicciones));
 
         prediccionesOrdenadas.putAll(predicciones);
 
+        // Obtiene los datos de cada unas de las películas consideradas para la
+        // predicción
         HashMap<Integer, String> listaPeliculas = new HashMap<>();
         Iterator<Pelicula> it3 = peliculas.iterator();
         while (it3.hasNext()) {
@@ -333,6 +382,8 @@ public class Utils {
 
         int aux = 1;
 
+        // Se muestran las 5 primeras predicciones (siempre y cuando se valoración
+        // predecida sea mayor que 4/5)
         System.out.println("\nPeliculas que te pueden interesar (valoracion predecida > 4):");
         for (Iterator iter = prediccionesOrdenadas.keySet().iterator(); iter.hasNext();) {
             Integer key = (Integer) iter.next();
@@ -351,7 +402,8 @@ public class Utils {
     }
 
     /**
-     * 
+     * Comparador para ordenar las películas en función de su valor de
+     * predicción
      */
     private static class Comparador implements Comparator {
 

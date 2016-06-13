@@ -29,18 +29,18 @@ public class Recomendador {
      */
     public Recomendador() {
         // Carga todas las películas
-        ArrayList<Pelicula> peliculas = new ArrayList<>(utils.cargarPeliculas());
+        ArrayList<Pelicula> peliculas = new ArrayList<>(utils.cargaPeliculas());
         // Carga todos los usuarios con sus valoraciones
-        ArrayList<Usuario> usuarios = new ArrayList<>(utils.cargarUsuarios());
-        HashMap<Integer, Integer> calificacionesUsuario = new HashMap<>(utils.introducirValoraciones(peliculas));
+        ArrayList<Usuario> usuarios = new ArrayList<>(utils.cargaUsuarios());
+        HashMap<Integer, Integer> valoracionesUsuario = new HashMap<>(utils.introduceValoraciones(peliculas));
 
         // Calcula la similitud de todos los usuarios con el usuario actual
-        utils.calculaSimilitudes(usuarios, calificacionesUsuario);
+        utils.calculaSimilitudes(usuarios, valoracionesUsuario);
         // Selecciona los 10 usuarios más similares al usuario actual
-        ArrayList<Usuario> vecinos = new ArrayList<>(utils.seleccionarVecinos(usuarios));
+        ArrayList<Usuario> vecinos = new ArrayList<>(utils.seleccionaVecinos(usuarios));
 
         // Selecciona las 5 películas más recomendables en función de las
         // valoraciones dadas por los usuarios similares
-        utils.seleccionarRecomendaciones(vecinos, calificacionesUsuario, peliculas);
+        utils.muestraRecomendaciones(vecinos, valoracionesUsuario, peliculas);
     }
 }
